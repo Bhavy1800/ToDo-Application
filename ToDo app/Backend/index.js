@@ -1,30 +1,57 @@
 const express = require("express");
 const { createTodo } = require("./types");
+const { todo } = require("./db");
 const app = express();
 
 app.use(express.json());
-app.post("/todo", function (req, res) {
- const createPayload = req.body;
- const parsePayload = createTodo.safeParse(createPayload)
- if(!parsePayload.success){
+app.post("/todo", async function (req, res) {
+  const createPayload = req.body;
+  const parsePayload = createTodo.safeParse(createPayload);
+  if (!parsePayload.success) {
     res.status(411).json({
-        msg:"you sent the wrong inputs",
-    })
-    return
- }
- //put it in mongodb
+      msg: "you sent the wrong inputs",
+    });
+    return;
+  }
+  //put it in mongodb
+  await todo.create({
+    title: createPayload.title,
+    description: createPayload.description,
+    completed:false
+  });
+  res.json({
+    msg:"Todo created"
+  })
 });
-app.get("/todos", function (req, res) {
+
+
+app.get("/todos",async function (req, res) {
+    const todos =await todo.find({})
+        res.json({
+            todos
+        })
+    
 });
-app.put("/completes", function (req, res) {
-const updatePayload = req.body;
-const parsePayload = updatePayload.safeParse(completepayload);
-if(!parsePayload.success){
+
+
+app.put("/completes",async function (req, res) {
+  const updatePayload = req.body;
+  const parsePayload = updatePayload.safeParse(completepayload);
+  if (!parsePayload.success) {
     res.statusCode(411).json({
       msg: "you sent the wrong inputs",
     });
-    return
-}
+    return;
+  }
+  await todo.update({
+    _id:req.body.id
+  },{completed:true
+  })
+  res.json({
+    msg:"todo marked as completed"
+  })
 });
-// with express.json() middkewares
-// write basic express boilerplate code
+
+app.listen(3000)
+
+    
