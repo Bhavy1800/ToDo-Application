@@ -6,7 +6,7 @@
 - Anyone can see their existing todos
 - Anyone can mark a todo as done
 
-Technology used - 
+Technologies used - 
 - React 
 - Express ap
 - Zod for validation
